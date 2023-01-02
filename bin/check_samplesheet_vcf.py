@@ -64,13 +64,20 @@ class RowChecker:
 
 
     def _validate_sample(self, row):
-        """Assert that the VCF file has one of the expected extensions."""
-        vcf_file = row[self._vcf]
-        if not any(vcf_file.endswith(extension) for extension in self.VALID_FORMATS):
-            raise AssertionError(
-                f"The VCF file has an unrecognized extension: {vcf_file}\n"
-                f"It should be one of: {', '.join(self.VALID_FORMATS)}"
-            )
+        """Assert that the VCF, traits and ancestry file has one of the expected extensions."""
+        #vcf_file = row[self._vcf]
+        #if not any(vcf_file.endswith(extension) for extension in self.VALID_FORMATS):
+        #    raise AssertionError(
+        #        f"The VCF file has an unrecognized extension: {vcf_file}\n"
+        #        f"It should be one of: {', '.join(self.VALID_FORMATS)}"
+        #    )
+        if not row[self._vcf].endswith(".vcf.gz"):
+            raise AssertionError(f"Unexpected VCF file extension: {row[self._vcf]}. The valid VCF extension should be: vcf.gz.")
+        if not row[self._traits].endswith("_traits-json.json"):
+            raise AssertionError(f"Unexpected traits file extension: {row[self._traits]}. The valid VCF extension should be: _traits-json.json.")
+        if not row[self._ancestry].endswith("_ancestry-json.json"):
+            raise AssertionError(f"Unexpected ancestry file extension: {row[self._ancestry]}. The valid VCF extension should be: _ancestry-json.json.")
+
 
 
     def validate_unique_samples(self):
