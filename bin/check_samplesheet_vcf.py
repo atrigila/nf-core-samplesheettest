@@ -29,7 +29,7 @@ class RowChecker:
         ".json",
     )
 
-    def __init__(self, sample="sample", vcf="vcf", json="json", **kwargs):
+    def __init__(self, sample="sample", vcf="vcf", traits="traits", ancestry="ancestry", **kwargs):
         """
         Initialize the row checker with the expected column names.
 
@@ -38,12 +38,15 @@ class RowChecker:
                 (default "sample").
             vcf_ (str): The name of the column that contains the VCF file path
                 (default "vcf").
-            json (str): The name of the column that contains the JSON file path
-                (default "json").
+            traits (str): The name of the column that contains the traits JSON file path
+                (default "traits").
+            ancestry (str): The name of the column that contains the ancestry JSON file path
+                (default "ancestry").
         """
         self._sample = sample
         self._vcf = vcf
-        self._json = json
+        self._traits = traits
+        self._ancestry = ancestry
         self._seen = set()
         self.modified = []
 
@@ -147,7 +150,7 @@ def check_samplesheet(file_in, file_out):
         https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/samplesheet/samplesheet_test_illumina_amplicon.csv
 
     """
-    required_columns = {"sample", "vcf", "json"}
+    required_columns = {"sample", "vcf", "traits", "ancestry"}
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_in.open(newline="") as in_handle:
         reader = csv.DictReader(in_handle, dialect=sniff_format(in_handle))
