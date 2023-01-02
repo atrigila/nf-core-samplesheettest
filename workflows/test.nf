@@ -84,8 +84,10 @@ workflow TEST {
     INPUT_CHECK_VCF (
         ch_input_vcf
     )
-    ch_versions2 = ch_versions2.mix(INPUT_CHECK_VCF.out.versions)
+    ch_versions = ch_versions.mix(INPUT_CHECK_VCF.out.versions)
 
+    ch_vcf_json= INPUT_CHECK_VCF.out.vcf_json
+    ch_vcf_json.dump(tag:"CH_INPUT_CHECK_VCFJSON")
     //
     // MODULE: Run FastQC
     //
