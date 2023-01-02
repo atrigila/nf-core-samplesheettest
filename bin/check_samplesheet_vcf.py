@@ -29,45 +29,45 @@ class RowChecker:
         ".json",
     )
 
-    def __init__(self, sample_col="sample", vcf_col="vcf", json_col="json", **kwargs):
+    def __init__(self, sample="sample", vcf="vcf", json="json", **kwargs):
         """
         Initialize the row checker with the expected column names.
 
         Args:
-            sample_col (str): The name of the column that contains the sample name
+            sample (str): The name of the column that contains the sample name
                 (default "sample").
-            vcf_col (str): The name of the column that contains the VCF file path
+            vcf_ (str): The name of the column that contains the VCF file path
                 (default "vcf").
-            json_col (str): The name of the column that contains the JSON file path
+            json (str): The name of the column that contains the JSON file path
                 (default "json").
         """
-        self._sample_col = sample_col
-        self._vcf_col = vcf_col
-        self._json_col = json_col
+        self._sample = sample
+        self._vcf = vcf
+        self._json = json
         self._seen = set()
         self.modified = []
 
 
-def validate_and_transform(self, row):
-    """
-    Perform all validations on the given row.
-    Args:
-        row (dict): A mapping from column headers (keys) to elements of that row
-            (values).
-    """
-    self._validate_sample(row)
-    self._seen.add(row[self._sample_col])
-    self.modified.append(row)
+    def validate_and_transform(self, row):
+        """
+        Perform all validations on the given row.
+        Args:
+            row (dict): A mapping from column headers (keys) to elements of that row
+                (values).
+        """
+        self._validate_sample(row)
+        self._seen.add(row[self._sample])
+        self.modified.append(row)
 
 
-def _validate_sample(self, row):
-    """Assert that the VCF file has one of the expected extensions."""
-    vcf_file = row[self._vcf_col]
-    if not any(vcf_file.endswith(extension) for extension in self.VALID_FORMATS):
-        raise AssertionError(
-            f"The VCF file has an unrecognized extension: {vcf_file}\n"
-            f"It should be one of: {', '.join(self.VALID_FORMATS)}"
-        )
+    def _validate_sample(self, row):
+        """Assert that the VCF file has one of the expected extensions."""
+        vcf_file = row[self._vcf]
+        if not any(vcf_file.endswith(extension) for extension in self.VALID_FORMATS):
+            raise AssertionError(
+                f"The VCF file has an unrecognized extension: {vcf_file}\n"
+                f"It should be one of: {', '.join(self.VALID_FORMATS)}"
+            )
 
 
     def validate_unique_samples(self):
@@ -82,9 +82,9 @@ def _validate_sample(self, row):
             raise AssertionError("The pair of sample name and VCF must be unique.")
         seen = Counter()
         for row in self.modified:
-            sample = row[self._sample_col]
+            sample = row[self._sample]
             seen[sample] += 1
-            row[self._sample_col] = f"{sample}_T{seen[sample]}"
+            row[self._sample] = f"{sample}_T{seen[sample]}"
 
 
 def read_head(handle, num_lines=10):
@@ -147,14 +147,14 @@ def check_samplesheet(file_in, file_out):
         https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/samplesheet/samplesheet_test_illumina_amplicon.csv
 
     """
-    required_columns = {"sample_col", "vcf_col", "json_col"}
+    required_columns = {"sample", "vcf", "json"}
     # See https://docs.python.org/3.9/library/csv.html#id3 to read up on `newline=""`.
     with file_in.open(newline="") as in_handle:
         reader = csv.DictReader(in_handle, dialect=sniff_format(in_handle))
         # Validate the existence of the expected header columns.
         if not required_columns.issubset(reader.fieldnames):
             req_cols = ", ".join(required_columns)
-            logger.critical(f"The sample sheet **must** contain these column headers: {req_cols}.")
+            logger.critical(f"The sample sheet **must** contain these column headers: {req_cols}. It currently contains {reader.fieldnames}")
             sys.exit(1)
         # Validate each row.
         checker = RowChecker()
